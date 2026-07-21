@@ -1,4 +1,5 @@
 import os
+# pyrefly: ignore [missing-import]
 from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
@@ -7,6 +8,7 @@ class Settings(BaseSettings):
     # API Keys (Mặc định để trống, sẽ lấy từ env hoặc cấu hình ở đây)
     OPENAI_API_KEY: str = ""
     ELEVENLABS_API_KEY: str = ""
+    ELEVENLABS_VOICE_ID: str = "21m00Tcm4TlvDq8ikWAM" # Rachel default
     RUNWAY_API_KEY: str = ""
     KLING_API_KEY: str = ""
     
@@ -16,6 +18,7 @@ class Settings(BaseSettings):
 
     class Config:
         env_file = ".env"
+        extra = "ignore"
 
 settings = Settings()
 

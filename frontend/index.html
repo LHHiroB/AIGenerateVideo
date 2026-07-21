@@ -121,6 +121,16 @@
                     <div class="merge-info">
                         <h3>Xuất Bản Video Thành Phẩm</h3>
                         <p>Sau khi toàn bộ các phân cảnh hiển thị trạng thái "Đã Hoàn Thành", tiến hành ghép chúng thành 1 video duy nhất.</p>
+                        <!-- Thêm thanh tiến trình chi tiết -->
+                        <div id="merge-progress-wrapper" class="hidden" style="width: 100%; margin-top: 15px;">
+                            <div class="progress-container">
+                                <div id="merge-progress-bar" class="progress-bar"></div>
+                            </div>
+                            <div class="progress-info">
+                                <span id="merge-progress-status">Đang ghép âm thanh và hình ảnh...</span>
+                                <span id="merge-progress-percent">0%</span>
+                            </div>
+                        </div>
                     </div>
                     <div class="merge-button-area">
                         <button id="btn-merge-video" class="btn btn-success btn-large">

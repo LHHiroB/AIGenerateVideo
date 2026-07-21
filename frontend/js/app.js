@@ -29,6 +29,11 @@ const elFinalResultCard = document.getElementById("final-result-card");
 const elFinalVideo = document.getElementById("final-video");
 const elBtnDownloadVideo = document.getElementById("btn-download-video");
 
+const elMergeProgressWrapper = document.getElementById("merge-progress-wrapper");
+const elMergeProgressBar = document.getElementById("merge-progress-bar");
+const elMergeProgressStatus = document.getElementById("merge-progress-status");
+const elMergeProgressPercent = document.getElementById("merge-progress-percent");
+
 const elToast = document.getElementById("toast");
 
 // Toast helper
@@ -146,12 +151,20 @@ function selectProject(projectId) {
         }
     });
 
-    // Hiện view chi tiết
+    // Hiện view chi tiết với hiệu ứng mượt mà
     elWelcomeView.classList.add("hidden");
     elProjectView.classList.remove("hidden");
+    elProjectView.classList.remove("fade-in-up");
+    void elProjectView.offsetWidth; // trigger reflow
+    elProjectView.classList.add("fade-in-up");
 
     // Reset view
     elFinalResultCard.classList.add("hidden");
+    if (elMergeProgressWrapper) {
+        elMergeProgressWrapper.classList.add("hidden");
+        elMergeProgressBar.style.width = "0%";
+        elMergeProgressPercent.innerText = "0%";
+    }
 
     // Bắt đầu polling thông tin dự án
     startPollingProject();
@@ -338,8 +351,34 @@ async function mergeProjectVideo() {
     if (!activeProjectId) return;
     
     elBtnMergeVideo.disabled = true;
-    elBtnMergeVideo.innerText = "Đang hợp nhất video...";
-    showToast("Bắt đầu nối ghép video... Vui lòng đợi trong giây lát");
+    elBtnMergeVideo.innerText = "Đang hợp nhất...";
+    
+    // Hiện thanh tiến trình
+    elMergeProgressWrapper.classList.remove("hidden");
+    elMergeProgressBar.style.width = "0%";
+    elMergeProgressPercent.innerText = "0%";
+    elMergeProgressStatus.innerText = "Bắt đầu thu thập tài nguyên phân cảnh...";
+
+    let progress = 0;
+    const progressInterval = setInterval(() => {
+        if (progress < 90) {
+            progress += Math.floor(Math.random() * 5) + 2;
+            if (progress > 90) progress = 90;
+            
+            elMergeProgressBar.style.width = `${progress}%`;
+            elMergeProgressPercent.innerText = `${progress}%`;
+
+            if (progress < 25) {
+                elMergeProgressStatus.innerText = "Đang chuẩn bị tệp tin video & âm thanh...";
+            } else if (progress < 55) {
+                elMergeProgressStatus.innerText = "Đang co giãn hình ảnh khớp với thuyết minh...";
+            } else if (progress < 75) {
+                elMergeProgressStatus.innerText = "Đang ghép nối và kết xuất định dạng MP4 H.264...";
+            } else {
+                elMergeProgressStatus.innerText = "Đang hoàn thiện đóng gói video...";
+            }
+        }
+    }, 400);
 
     try {
         const response = await fetch(`${API_BASE}/projects/${activeProjectId}/merge`, {
@@ -352,11 +391,24 @@ async function mergeProjectVideo() {
         }
         
         const result = await response.json();
+        
+        // Hoàn thành 100%
+        clearInterval(progressInterval);
+        elMergeProgressBar.style.width = "100%";
+        elMergeProgressPercent.innerText = "100%";
+        elMergeProgressStatus.innerText = "Hoàn thành xuất sắc!";
+        
         showToast("Hợp nhất video thành công!");
         
-        // Tải lại dự án để hiển thị kết quả
-        await fetchProjectDetails();
+        setTimeout(async () => {
+            elMergeProgressWrapper.classList.add("hidden");
+            // Tải lại dự án để hiển thị kết quả
+            await fetchProjectDetails();
+        }, 1000);
+
     } catch (err) {
+        clearInterval(progressInterval);
+        elMergeProgressWrapper.classList.add("hidden");
         showToast(err.message);
     } finally {
         elBtnMergeVideo.disabled = false;

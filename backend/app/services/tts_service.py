@@ -1,5 +1,6 @@
 import os
 import asyncio
+import httpx
 # pyrefly: ignore [missing-import]
 from gtts import gTTS
 from ..config import settings
@@ -13,6 +14,40 @@ class TTSService:
         filename = f"{project_id}_{scene_index}.mp3"
         filepath = os.path.join(output_dir, filename)
         
+        # 1. Thử dùng ElevenLabs nếu có API key
+        if settings.ELEVENLABS_API_KEY:
+            try:
+                print(f"Calling ElevenLabs for project {project_id} scene {scene_index}...")
+                url = f"https://api.elevenlabs.io/v1/text-to-speech/{settings.ELEVENLABS_VOICE_ID}"
+                headers = {
+                    "xi-api-key": settings.ELEVENLABS_API_KEY,
+                    "Content-Type": "application/json"
+                }
+                payload = {
+                    "text": text,
+                    "model_id": "eleven_multilingual_v2",
+                    "voice_settings": {
+                        "stability": 0.5,
+                        "similarity_boost": 0.75
+                    }
+                }
+                
+                async with httpx.AsyncClient(timeout=60.0) as client:
+                    response = await client.post(url, headers=headers, json=payload)
+                    if response.status_code == 200:
+                        # Ghi nội dung nhị phân vào file
+                        def write_binary():
+                            with open(filepath, "wb") as f:
+                                f.write(response.content)
+                        await asyncio.to_thread(write_binary)
+                        return f"/media/audio/{filename}"
+                    else:
+                        print(f"ElevenLabs API Error: {response.status_code} - {response.text}")
+            except Exception as e:
+                print(f"Failed to generate TTS via ElevenLabs: {e}")
+                
+        # 2. Fallback sang gTTS (Miễn phí) hoặc Mock
+        print(f"Falling back to gTTS for project {project_id} scene {scene_index}...")
         try:
             # Chạy gTTS trong threadpool để tránh chặn event loop
             def generate_speech():
@@ -35,3 +70,4 @@ class TTSService:
             await asyncio.to_thread(make_fallback)
             
         return f"/media/audio/{filename}"
+
