@@ -1,7 +1,9 @@
 import os
 import asyncio
+# pyrefly: ignore [missing-import]
 from PIL import Image, ImageDraw, ImageFont
-from moviepy.editor import ImageClip
+# pyrefly: ignore [missing-import]
+from moviepy import ImageClip
 from ..config import settings
 
 class VideoService:
@@ -61,7 +63,7 @@ class VideoService:
             image.save(temp_image_path)
             
             # 2. Chuyển ảnh thành video clip với độ dài yêu cầu
-            clip = ImageClip(temp_image_path).set_duration(duration)
+            clip = ImageClip(temp_image_path).with_duration(duration)
             clip.write_videofile(filepath, fps=24, codec="libx264", logger=None)
             
             # Dọn dẹp ảnh tạm

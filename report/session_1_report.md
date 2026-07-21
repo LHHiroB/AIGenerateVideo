@@ -56,6 +56,11 @@ Cấu trúc dự án hiện tại:
 4. **Kiểm duyệt & Tạo lại (HITL)**: Người dùng có thể sửa đổi Prompt hình ảnh trên từng phân cảnh và bấm "Tạo lại Video". Hệ thống sẽ chạy tác vụ đơn lẻ và cập nhật lại video ngay trên card.
 5. **Hợp nhất Video thành phẩm (Merge)**: Sử dụng MoviePy đọc độ dài file audio của mỗi cảnh, tự động cắt/nới rộng video hình tương ứng cho trùng khớp, sau đó ghép nối tất cả thành một video chất lượng cao kèm tiếng thuyết minh hoàn chỉnh.
 
+### 2.4. Xử lý sự cố & Nâng cấp Tương thích (Troubleshooting)
+- **Tương thích MoviePy v2.x**: Khắc phục lỗi `ModuleNotFoundError: No module named 'moviepy.editor'` do sự thay đổi kiến trúc trong MoviePy 2.0+.
+- **Tối ưu hóa vòng lặp Video**: Cập nhật lại các hàm tương thích API v2 (`with_duration`, `subclipped`, `with_audio`) và áp dụng `vfx.Loop` giúp xử lý tình huống âm thanh dài hơn video mẫu một cách mượt mà.
+- **Xác minh End-to-End**: Thử nghiệm sinh dự án "Sự tích Thánh Gióng", kiểm duyệt và ghép nối hoàn chỉnh thành công file `frontend/media/output/project_1_final.mp4`.
+
 ---
 
 ## 3. Hướng Dẫn Vận Hành Hệ Thống

@@ -1,6 +1,7 @@
 import os
 import asyncio
-from moviepy.editor import VideoFileClip, AudioFileClip, concatenate_videoclips
+# pyrefly: ignore [missing-import]
+from moviepy import VideoFileClip, AudioFileClip, concatenate_videoclips, vfx
 from ..config import settings
 
 class MediaService:
@@ -34,11 +35,11 @@ class MediaService:
                 
                 # Điều chỉnh thời lượng video theo tệp audio
                 if video_clip.duration < duration:
-                    video_clip = video_clip.set_duration(duration)
+                    video_clip = video_clip.with_effects([vfx.Loop(duration=duration)])
                 else:
-                    video_clip = video_clip.subclip(0, duration)
+                    video_clip = video_clip.subclipped(0, duration)
                     
-                video_clip = video_clip.set_audio(audio_clip)
+                video_clip = video_clip.with_audio(audio_clip)
                 final_clips.append(video_clip)
                 
             if final_clips:

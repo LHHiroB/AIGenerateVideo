@@ -1,5 +1,6 @@
 import os
 import asyncio
+# pyrefly: ignore [missing-import]
 from gtts import gTTS
 from ..config import settings
 
@@ -23,7 +24,8 @@ class TTSService:
             print(f"TTS Error: {e}, falling back to generating mock audio via moviepy")
             # Fallback sang tạo clip âm thanh tĩnh nếu mất mạng hoặc lỗi
             import numpy as np
-            from moviepy.audio.AudioClip import AudioClip
+            # pyrefly: ignore [missing-import]
+            from moviepy import AudioClip
             
             def make_fallback():
                 make_frame = lambda t: np.sin(2 * np.pi * 440 * t)
