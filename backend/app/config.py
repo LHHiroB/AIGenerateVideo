@@ -11,6 +11,8 @@ class Settings(BaseSettings):
     ELEVENLABS_VOICE_ID: str = "21m00Tcm4TlvDq8ikWAM" # Rachel default
     RUNWAY_API_KEY: str = ""
     KLING_API_KEY: str = ""
+    ANIMAI_API_KEY: str = ""
+    ANIMAI_BASE_URL: str = "https://ai.tool98.com"
     
     # Media paths
     STATIC_DIR: str = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "frontend"))

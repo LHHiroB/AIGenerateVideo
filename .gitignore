@@ -144,8 +144,8 @@ db
 # Project specific ignores
 *.db
 *.db-journal
-/frontend/media/audio/*.mp3
-/frontend/media/video/*.mp4
-/frontend/media/video/*.png
-/frontend/media/output/*.mp4
+# /frontend/media/audio/*.mp3
+# /frontend/media/video/*.mp4
+# /frontend/media/video/*.png
+# /frontend/media/output/*.mp4
 .env

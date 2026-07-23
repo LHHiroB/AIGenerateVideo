@@ -6,16 +6,34 @@ from PIL import Image, ImageDraw, ImageFont
 # pyrefly: ignore [missing-import]
 from moviepy import ImageClip
 from ..config import settings
+from .animai_service import AnimAIService
 
 class VideoService:
     @staticmethod
     async def generate_video(prompt: str, project_id: int, scene_index: int, duration: int) -> str:
         output_dir = os.path.join(settings.MEDIA_DIR, "video")
+        img_dir = os.path.join(settings.MEDIA_DIR, "images")
         os.makedirs(output_dir, exist_ok=True)
+        os.makedirs(img_dir, exist_ok=True)
         
         filename = f"{project_id}_{scene_index}.mp4"
         filepath = os.path.join(output_dir, filename)
+        img_filename = f"{project_id}_{scene_index}.png"
+        img_filepath = os.path.join(img_dir, img_filename)
         
+        # 0. Ưu tiên dùng AnimAI Studio API nếu có API key
+        if settings.ANIMAI_API_KEY.strip():
+            try:
+                print(f"[AnimAI] Generating scene image for project {project_id} scene {scene_index}...")
+                await AnimAIService.generate_image(prompt, img_filepath, aspect_ratio="16:9")
+                
+                print(f"[AnimAI] Generating scene video from image for project {project_id} scene {scene_index}...")
+                await AnimAIService.generate_video_from_image(prompt, img_filepath, filepath, duration=duration)
+                
+                return f"/media/video/{filename}"
+            except Exception as e:
+                print(f"[AnimAI Error] Failed to generate video via AnimAI Studio: {e}")
+
         # 1. Thử dùng Kling AI
         if settings.KLING_API_KEY:
             try:
